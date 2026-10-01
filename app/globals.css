@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f2f6f5;
+  --panel: #ffffff;
+  --ink: #12302f;
+  --mute: #5d7472;
+  --line: #dbe4e2;
+  --acc: #0e6b63;
+  --accfg: #ffffff;
+  --gold: #e2a72e;
+  --bad: #b4372f;
+  --ok: #1f8a4c;
+  --side: #0f2f2d;
+}
+
+.dark {
+  --bg: #0d1a19;
+  --panel: #142524;
+  --ink: #e6f0ee;
+  --mute: #8fa9a6;
+  --line: #24403d;
+  --acc: #3cc2b2;
+  --accfg: #08201d;
+  --side: #091615;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg) !important;
+  color: var(--ink) !important;
+  font-family: 'Figtree', system-ui, sans-serif !important;
+}
+
+/* Fallback classes for when Tailwind fails to generate app- classes */
+.bg-app-bg { background-color: var(--bg) !important; }
+.bg-app-panel { background-color: var(--panel) !important; }
+.bg-app-side { background-color: var(--side) !important; }
+.text-app-ink { color: var(--ink) !important; }
+.text-app-mute { color: var(--mute) !important; }
+.text-app-gold { color: var(--gold) !important; }
+.border-app-line { border-color: var(--line) !important; }
+.text-app-acc { color: var(--acc) !important; }

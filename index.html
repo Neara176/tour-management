@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mekong Tours Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://xqqstdjqdpeuayzkrium.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_NiP9QdFlaaE7g57rzxapyg_yvSx2ca5';
+window.dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+  <style>
+    :root {
+      --bg: #f2f6f5;
+      --panel: #fff;
+      --ink: #12302f;
+      --mute: #5d7472;
+      --line: #dbe4e2;
+      --acc: #0e6b63;
+      --accfg: #fff;
+      --gold: #e2a72e;
+      --bad: #b4372f;
+      --ok: #1f8a4c;
+      --side: #0f2f2d;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    @media(prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d1a19;
+        --panel: #142524;
+        --ink: #e6f0ee;
+        --mute: #8fa9a6;
+        --line: #24403d;
+        --acc: #3cc2b2;
+        --accfg: #08201d;
+        --side: #091615
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0d1a19;
+      --panel: #142524;
+      --ink: #e6f0ee;
+      --mute: #8fa9a6;
+      --line: #24403d;
+      --acc: #3cc2b2;
+      --accfg: #08201d;
+      --side: #091615
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.5 Figtree, system-ui, sans-serif
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px
+    }
+
+    #login {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: linear-gradient(160deg, #0f2f2d, #0e6b63)
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px
+    }
+
+    #login .card {
+      width: min(380px, 100%);
+      padding: 28px
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 8px;
+      line-height: 1.2
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800
+    }
+
+    h2 {
+      font-size: 21px
+    }
+
+    h3 {
+      font-size: 16px
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 10px 0 4px
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--bg)
+    }
+
+    input[type=color] {
+      padding: 2px;
+      height: 38px
+    }
+
+    .btn {
+      background: var(--acc);
+      color: var(--accfg);
+      border: 0;
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-weight: 600
+    }
+
+    .btn.alt {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line)
+    }
+
+    .btn.sm {
+      padding: 4px 9px;
+      font-size: 13px
+    }
+
+    .btn.bad {
+      background: var(--bad);
+      color: #fff
+    }
+
+    .link {
+      background: none;
+      border: 0;
+      color: var(--acc);
+      padding: 0;
+      text-decoration: underline
+    }
+
+    #app {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh
+    }
+
+    nav {
+      background: var(--side);
+      color: #cfe3e0;
+      padding: 16px 10px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto
+    }
+
+    nav .brand {
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+      padding: 4px 10px 16px
+    }
+
+    nav .brand span {
+      color: var(--gold)
+    }
+
+    nav button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: 0;
+      color: inherit;
+      padding: 9px 10px;
+      border-radius: 6px
+    }
+
+    nav button.on {
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      font-weight: 600
+    }
+
+    main {
+      padding: 22px;
+      max-width: 1100px;
+      width: 100%;
+      min-width: 0
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .sp {
+      justify-content: space-between
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 14px 0
+    }
+
+    .stat b {
+      display: block;
+      font-size: 26px;
+      font-weight: 800
+    }
+
+    .stat small {
+      color: var(--mute)
+    }
+
+    .stat.hero {
+      background: var(--side);
+      color: #fff;
+      border: 0
+    }
+
+    .stat.hero small {
+      color: #9dc4bf
+    }
+
+    .stat.hero b {
+      color: var(--gold)
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0;
+      flex-wrap: wrap
+    }
+
+    .tabs button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 20px;
+      padding: 5px 14px
+    }
+
+    .tabs button.on {
+      background: var(--acc);
+      color: var(--accfg);
+      border-color: var(--acc)
+    }
+
+    .tw {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap
+    }
+
+    th {
+      font-size: 13px;
+      color: var(--mute);
+      font-weight: 600
+    }
+
+    tr.click {
+      cursor: pointer
+    }
+
+    tr.click:hover {
+      background: var(--bg)
+    }
+
+    .tag {
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--line)
+    }
+
+    .tag.paid,
+    .tag.completed,
+    .tag.active {
+      background: #d5f0df;
+      color: #14602f
+    }
+
+    .tag.upcoming {
+      background: #fbeccb;
+      color: #7a5200
+    }
+
+    .tag.unpaid,
+    .tag.cancelled,
+    .tag.inactive {
+      background: #f6d9d6;
+      color: #8a2620
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: baseline
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      font-size: 13px
+    }
+
+    .cal {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px
+    }
+
+    .cal .h {
+      font-size: 12px;
+      color: var(--mute);
+      text-align: center
+    }
+
+    .cal .d {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      min-height: 78px;
+      padding: 4px;
+      font-size: 12px;
+      overflow: hidden
+    }
+
+    .cal .d.today {
+      border-color: var(--gold);
+      box-shadow: inset 0 0 0 1px var(--gold)
+    }
+
+    .cal .d.off {
+      opacity: .45
+    }
+
+    .chip {
+      display: block;
+      width: 100%;
+      text-align: left;
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      padding: 1px 5px;
+      margin-top: 2px;
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--ink);
+      width: min(440px, 94vw);
+      padding: 20px
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, .5)
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 6px 12px
+    }
+
+    .kv dt {
+      color: var(--mute)
+    }
+
+    .kv dd {
+      margin: 0
+    }
+
+    .muted {
+      color: var(--mute)
+    }
+
+    .pos {
+      color: var(--ok)
+    }
+
+    .neg {
+      color: var(--bad)
+    }
+
+    #toast {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--side);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 6px;
+      display: none;
+      z-index: 9
+    }
+
+    @media(max-width:760px) {
+      #app {
+        display: block
+      }
+
+      nav {
+        height: auto;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 8px;
+        padding-top: calc(8px + env(safe-area-inset-top, 0px))
+      }
+
+      nav .brand {
+        display: none
+      }
+
+      nav button {
+        width: auto;
+        white-space: nowrap
+      }
+
+      main {
+        padding: 14px
+      }
+
+      .cal .d {
+        min-height: 56px
+      }
+    }
+
+    @media print {
+
+      nav,
+      .noprint {
+        display: none !important
+      }
+
+      #app {
+        display: block
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <nav id="nav"></nav>
+    <main id="main"></main>
+  </div>
+  <dialog id="dlg"></dialog>
+  <div id="toast"></div>
+  <script>
+    const $ = s => document.querySelector(s);
+    const off = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10) };
+    const TODAY = off(0);
+    let S = null;
+    /* OTA rule: tours in one month are paid on the 7th of the next month */
+    const payDate = (date, ota) => { if (!ota) return date; let [y, m] = date.split('-').map(Number); m++; if (m > 12) { m = 1; y++ } return `${y}-${String(m).padStart(2, '0')}-07` };
+    const seed = () => {
+      const tourCats = [{ n: 'City tour', c: '#3b82c4' }, { n: 'Killing Fields', c: '#c2453a' }, { n: 'Food tour', c: '#e2a72e' }, { n: 'Cruise', c: '#7a5bb5' }];
+      const sources = [{ n: 'Direct', ota: false }, { n: 'TripAdvisor', ota: true }, { n: 'Viator', ota: true }, { n: 'GetYourGuide', ota: true }];
+      const tours = [
+        { id: 1, name: 'Killing Fields & S-21 half day', cat: 'Killing Fields', dur: '4 h', price: 35, max: 8, active: true, desc: 'Choeung Ek and Tuol Sleng with guide and tuk-tuk.' },
+        { id: 2, name: 'Royal Palace & Silver Pagoda', cat: 'City tour', dur: '3 h', price: 30, max: 10, active: true, desc: 'Palace grounds, National Museum, riverside walk.' },
+        { id: 3, name: 'Mekong sunset cruise', cat: 'Cruise', dur: '2 h', price: 25, max: 12, active: true, desc: 'Boat trip at golden hour with drinks.' },
+        { id: 4, name: 'Tuk-tuk street food night', cat: 'Food tour', dur: '3 h', price: 28, max: 6, active: true, desc: 'Evening food stops across the city.' },
+        { id: 5, name: 'Phnom Penh city highlights', cat: 'City tour', dur: '6 h', price: 45, max: 8, active: true, desc: 'Markets, Wat Phnom and Independence Monument.' }];
+      const B = [], VP = [], cs = ['Direct', 'TripAdvisor', 'Viator', 'Direct', 'GetYourGuide', 'TripAdvisor'];
+      for (let i = 0; i < 30; i++) {
+        const date = off(-150 + i * 6), tid = [1, 2, 3, 4, 5, 2, 1, 4][i % 8], t = tours[tid - 1], pax = 2 + i % 4, s = cs[i % 6], ota = sources.find(x => x.n === s).ota;
+        const can = i % 11 === 5, status = can ? 'cancelled' : date < TODAY ? 'completed' : 'upcoming', pdt = payDate(date, ota), paid = !can && pdt <= TODAY;
+        B.push({ id: i + 1, cid: i % 4 + 1, tid, date, time: ['08:00', '09:00', '16:30', '18:00'][i % 4], pax, total: t.price * pax, status, src: s, paid, paidDate: paid ? pdt : '', method: paid ? (ota ? 'OTA payout' : ['Cash', 'ABA', 'Wing'][i % 3]) : '', hotel: '', guide: ['Vibol', 'Dara'][i % 2], notes: '' });
+        if (can) continue;
+        const add = (type, payee, amt) => { const p = date < TODAY; VP.push({ id: VP.length + 1, type, payee, bid: i + 1, amt, due: date, paid: p && i < 24, paidDate: p && i < 24 ? date : '' }) };
+        if (i % 2 === 0) { add('Tuk-tuk', 'Tuk-tuk Chea', 10 + pax * 2); add('Guide', ['Vibol', 'Dara'][i % 2], 15) }
+        if (i % 3 === 0) add('Vendor stop 1', 'Lotus Cafe', pax * 4);
+        if (i % 4 === 1) add('Vendor stop 2', 'Silver Pagoda shop', pax * 3);
+        if (tid === 4) { add('Food', 'Night market stall', pax * 3); add('Food', 'Noodle house', pax * 2); add('Food', 'Dessert cart', pax) }
+      }
+      return {
+        settings: { name: 'Mekong Tours Phnom Penh', phone: '+855 12 345 678', rate: 4100, user: 'Tour Operator' },
+        cats: ['Marketing', 'Fuel', 'Vehicle repair', 'Office', 'Other'], tourCats, sources, vTypes: ['Vendor stop 1', 'Vendor stop 2', 'Tuk-tuk', 'Guide', 'Food', 'Other'], tours,
+        customers: [{ id: 1, name: 'Emma Clarke', contact: 'WhatsApp +44 7700 900123', nat: 'UK', notes: 'Vegetarian' }, { id: 2, name: 'Liu Wei', contact: 'WeChat liuwei88', nat: 'China', notes: '' }, { id: 3, name: 'Marc Dubois', contact: 'marc@mail.fr', nat: 'France', notes: '' }, { id: 4, name: 'Sophea Chan', contact: 'Telegram @sopheac', nat: 'Cambodia', notes: '' }],
+        bookings: B, vp: VP,
+        expenses: [-120, -90, -60, -30, -5].map((o, i) => ({ id: i + 1, cat: i % 2 ? 'Fuel' : 'Marketing', amt: [45, 20, 45, 25, 45][i], date: off(o), desc: i % 2 ? 'Fuel top-up' : 'Facebook ads' }))
+      };
+    };
+S = null;
+
+// Load data from Supabase when the app starts
+async function loadData() {
+  const { data, error } = await window.dbClient.from('app_data').select('data').eq('id', 1).single();
+  if (data && data.data) {
+    S = data.data;
+  } else {
+    S = seed();
+    await save(); // Save initial seed data to cloud
+  }
+  if(S.settings&&S.settings.user==='Sokha (Owner)')S.settings.user='Tour Operator';
+  S.vTypes=S.vTypes||[];['Food','Other'].forEach(t=>S.vTypes.includes(t)||S.vTypes.push(t));if(!S.cats.includes('Other'))S.cats.push('Other');
+  draw();
+}
+
+// Save data to Supabase whenever changes happen
+const save = async () => {
+  try {
+    await window.dbClient.from('app_data').upsert({ id: 1, data: S });
+  } catch(e) {
+    console.error(e);
+  }
+};
+
+// Start the app by loading from Supabase
+loadData();
+    const nid = a => Math.max(0, ...a.map(x => x.id)) + 1;
+    const $$ = n => '$' + Number(n).toFixed(2);
+    const by = (a, id) => a.find(x => x.id == id) || {};
+    const isOTA = s => !!(S.sources.find(x => x.n === s) || {}).ota;
+    const pd = b => payDate(b.date, isOTA(b.src));
+    const pstat = b => b.paid ? 'paid' : 'unpaid';
+    const tag = t => `<span class="tag ${t}">${t}</span>`;
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const toast = m => { const t = $('#toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2200) };
+    const inR = (d, a, b) => (!a || d >= a) && (!b || d <= b);
+    const catOf = b => by(S.tours, b.tid).cat || 'Other';
+    const colOf = n => (S.tourCats.find(c => c.n === n) || { c: '#6b8f71' }).c;
+    const revList = () => S.bookings.filter(b => b.paid).map(b => ({ date: b.paidDate, amt: b.total, b }));
+    const expList = () => [...S.expenses.map(e => ({ date: e.date, amt: e.amt, cat: e.cat, desc: e.desc, eid: e.id })), ...S.vp.filter(v => v.paid).map(v => ({ date: v.paidDate, amt: v.amt, cat: v.type, desc: v.payee + ' (booking #' + v.bid + ')' }))];
+    const sum = l => l.reduce((s, x) => s + x.amt, 0);
+
+    let V = { r: 'dash', id: null, f: 'all', pt: 'in', sub: 'rev', cv: 'month', cd: TODAY, rt: 'booking', ra: '', rb: '', m: 'n', mo: '' };
+    const go = (r, id = null) => { V.r = r; V.id = id; draw(); scrollTo(0, 0) };
+    window.go = go; window.V = V; window.TODAY = TODAY;
+    const NAV = [['dash', 'Dashboard'], ['cal', 'Calendar'], ['book', 'Bookings'], ['cust', 'Customers'], ['tour', 'Tours'], ['fin', 'Finance'], ['pay', 'Payments'], ['rep', 'Reports'], ['set', 'Settings']];
+
+    function form(title, fields, onSave) {
+      const d = $('#dlg');
+      d.innerHTML = `<h2>${title}</h2><div>${fields.map(f => {
+        const v = f.v ?? ''; let inp;
+        if (f.t === 'select') inp = `<select id="f_${f.k}">${f.o.map(o => { const a = Array.isArray(o); const ov = a ? o[0] : o, ol = a ? o[1] : o; return `<option value="${esc(ov)}" ${ov == v ? 'selected' : ''}>${esc(ol)}</option>` }).join('')}</select>`;
+        else if (f.t === 'textarea') inp = `<textarea id="f_${f.k}" rows="2">${esc(v)}</textarea>`;
+        else inp = `<input id="f_${f.k}" type="${f.t || 'text'}" value="${esc(v)}" ${f.t === 'number' ? 'step="any" min="0"' : ''}>`;
+        return `<label for="f_${f.k}">${f.l}</label>${inp}`
+      }).join('')}</div>
+  <p class="row"><button class="btn" id="ok">Save</button><button class="btn alt" id="no">Cancel</button></p>`;
+      d.showModal();
+      $('#no').onclick = () => d.close();
+      $('#ok').onclick = () => { const o = {}; fields.forEach(f => o[f.k] = $('#f_' + f.k).value); if (onSave(o) !== false) { d.close(); save(); draw() } };
+    }
+    const tabs = (items, cur, fn) => `<div class="tabs">${items.map(i => `<button class="${cur === i[0] ? 'on' : ''}" onclick="${fn}('${i[0]}')">${i[1]}</button>`).join('')}</div>`;
+    window.setF = f => { V.f = f; draw() }; window.setM = m => { V.m = m; draw() }; window.setPt = p => { V.pt = p; V.f = 'all'; draw() }; window.setSub = s => { V.sub = s; draw() }; window.setCv = v => { V.cv = v; draw() };
+    const bTable = list => list.length ? `<div class="tw"><table><tr><th>Date</th><th>Customer</th><th>Tour</th><th>Source</th><th>Guests</th><th>Total</th><th>Status</th><th>Payment</th></tr>${list.map(b => `<tr class="click" onclick="go('bd',${b.id})"><td>${b.date} ${b.time}</td><td>${esc(by(S.customers, b.cid).name)}</td><td><i class="dot" style="background:${colOf(catOf(b))}"></i>${esc(by(S.tours, b.tid).name)}</td><td>${esc(b.src)}</td><td>${b.pax}</td><td>${$$(b.total)}</td><td>${tag(b.status)}</td><td>${tag(pstat(b))}</td></tr>`).join('')}</table></div>` : '<p class="muted">Nothing here yet.</p>';
+
+    /* monthly stacked chart: one colour per tour category */
+    function chart() {
+      const ms = [], n = new Date();
+      for (let i = 5; i >= 0; i--) { const d = new Date(n.getFullYear(), n.getMonth() - i, 1); ms.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')) }
+      const val = b => V.m === 'pax' ? b.pax : V.m === 'usd' ? b.total : 1, used = new Set();
+      const data = ms.map(m => { const o = {}; S.bookings.filter(b => b.status !== 'cancelled' && b.date.slice(0, 7) === m).forEach(b => { const k = catOf(b); used.add(k); o[k] = (o[k] || 0) + val(b) }); return o });
+      const keys = [...S.tourCats.map(c => c.n), 'Other'].filter(k => used.has(k) || k !== 'Other');
+      const tot = data.map(o => sum(Object.values(o).map(amt => ({ amt })))), mx = Math.max(1, ...tot);
+      const mag = 10 ** Math.floor(Math.log10(mx / 4 || 1)), step = Math.ceil(mx / 4 / mag) * mag, top = step * 4;
+      const W = 640, H = 250, L = 48, T = 14, Bt = 28, ph = H - T - Bt, slot = (W - L - 8) / 6, bw = slot * .56, y = v => T + ph - v / top * ph, f = v => V.m === 'usd' ? '$' + v : v;
+      let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Monthly tours sold by category">`;
+      for (let i = 0; i <= 4; i++) { const v = step * i; s += `<line x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--mute)">${f(v)}</text>` }
+      ms.forEach((m, i) => {
+        const x = L + i * slot + (slot - bw) / 2; let acc = 0;
+        keys.forEach(k => { const v = data[i][k] || 0; if (!v) return; s += `<rect x="${x}" y="${y(acc + v)}" width="${bw}" height="${ph * v / top}" fill="${colOf(k)}"><title>${k}: ${f(v)}</title></rect>`; acc += v });
+        if (tot[i]) s += `<text x="${x + bw / 2}" y="${y(tot[i]) - 4}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">${f(tot[i])}</text>`;
+        s += `<text x="${x + bw / 2}" y="${H - 9}" text-anchor="middle" font-size="12" fill="var(--mute)">${new Date(m + '-01T00:00').toLocaleString('en', { month: 'short' })}</text>`
+      });
+      return s + '</svg><div class="legend">' + keys.map(k => `<span><i class="dot" style="background:${colOf(k)}"></i>${esc(k)}</span>`).join('') + '</div>';
+    }
+
+
+    /* reminders and calendar */
+    const bdt = b => new Date(b.date + 'T' + b.time + ':00');
+    const p2 = n => String(n).padStart(2, '0');
+    const gcal = b => {
+      const t = by(S.tours, b.tid), e = new Date(bdt(b).getTime() + (parseInt(t.dur) || 3) * 36e5);
+      const ee = `${e.getFullYear()}${p2(e.getMonth() + 1)}${p2(e.getDate())}T${p2(e.getHours())}${p2(e.getMinutes())}00`;
+      return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(t.name + ' - ' + by(S.customers, b.cid).name) + '&dates=' + b.date.replace(/-/g, '') + 'T' + b.time.replace(':', '') + '00/' + ee + '&ctz=Asia/Phnom_Penh&location=' + encodeURIComponent(b.hotel || '') + '&details=' + encodeURIComponent(b.pax + ' guests. Guide: ' + (b.guide || '-') + '. Source: ' + b.src)
+    };
+    const soon = () => S.bookings.filter(b => { const d = bdt(b); return b.status === 'upcoming' && d > Date.now() - 36e5 && d < Date.now() + 48 * 36e5 }).sort((a, b) => bdt(a) - bdt(b));
+    const remindCard = () => {
+      const l = soon(), day = b => b.date === TODAY ? 'Today' : b.date === off(1) ? 'Tomorrow' : b.date;
+      return `<div class="card" style="margin-bottom:14px"><div class="row sp"><h2>Reminders: next 48 hours</h2><button class="btn alt sm" onclick="enableNotif()">Turn on notifications</button></div>
+ ${l.length ? `<div class="tw"><table><tr><th>When</th><th>Customer</th><th>Tour</th><th>Pickup</th><th>Guide</th><th>Payment</th><th></th></tr>${l.map(b => `<tr><td><b>${day(b)} ${b.time}</b></td><td>${esc(by(S.customers, b.cid).name)} (${b.pax})</td><td>${esc(by(S.tours, b.tid).name)}</td><td>${esc(b.hotel) || '-'}</td><td>${esc(b.guide) || '-'}</td><td>${tag(pstat(b))}</td><td><a class="link" target="_blank" rel="noopener" href="${gcal(b)}">Add to calendar</a></td></tr>`).join('')}</table></div>` : '<p class="muted">No tours in the next 48 hours.</p>'}
+ <p class="muted" style="margin-bottom:0">Notifications appear only while this page is open. For your iPhone: tap Add to calendar, then add your Google account under iPhone Settings, Calendar, Accounts, and the tours show in the Calendar app with alerts.</p></div>`};
+    window.enableNotif = async () => { try { const r = await Notification.requestPermission(); toast(r === 'granted' ? 'Reminders on while this page is open' : 'Notifications are blocked'); if (r === 'granted') checkNotif() } catch (e) { toast('Notifications are not supported in this browser') } };
+    function checkNotif() {
+      try {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return; let n = {}; try { n = JSON.parse(localStorage.getItem('mekong-notified') || '{}') } catch (e) { }
+        soon().forEach(b => {
+          const k = bdt(b) - Date.now() <= 2 * 36e5 ? '2h' : '24h'; if (n[b.id + k] || (k === '24h' && bdt(b) - Date.now() > 24 * 36e5)) return; n[b.id + k] = 1; if (k === '2h') n[b.id + '24h'] = 1;
+          new Notification('Tour reminder', { body: `${b.time} ${by(S.customers, b.cid).name}: ${by(S.tours, b.tid).name}${b.hotel ? ', pickup ' + b.hotel : ''}` })
+        });
+        try { localStorage.setItem('mekong-notified', JSON.stringify(n)) } catch (e) { }
+      } catch (e) { }
+    }
+    setInterval(checkNotif, 600000);
+
+    const V_ = {};
+    V_.dash = () => {
+      const R = sum(revList()), E = sum(expList());
+      const up = S.bookings.filter(b => b.status === 'upcoming').sort((a, b) => a.date.localeCompare(b.date));
+      const toRec = S.bookings.filter(b => !b.paid && b.status !== 'cancelled'), toPay = S.vp.filter(v => !v.paid);
+      const g = {}; toRec.filter(b => isOTA(b.src)).forEach(b => { const k = b.src + '|' + pd(b); (g[k] = g[k] || { s: b.src, d: pd(b), n: 0, a: 0 }).n++; g[k].a += b.total });
+      const ota = Object.values(g).sort((a, b) => a.d.localeCompare(b.d));
+      return `<h1>Overview</h1><p class="muted">${esc(S.settings.name)}. All figures in USD. Revenue counts money received.</p>
+ <div class="grid">
+  <div class="card stat hero"><small>Net profit</small><b>${$$(R - E)}</b></div>
+  <div class="card stat"><small>Revenue received</small><b>${$$(R)}</b></div>
+  <div class="card stat"><small>Expenses paid</small><b>${$$(E)}</b></div>
+  <div class="card stat"><small>Total bookings</small><b>${S.bookings.length}</b></div>
+  <div class="card stat"><small>Upcoming tours</small><b>${up.length}</b></div>
+  <div class="card stat"><small>Still to receive</small><b>${$$(sum(toRec.map(b => ({ amt: b.total }))))}</b></div>
+  <div class="card stat"><small>Unpaid to vendors</small><b>${$$(sum(toPay))}</b></div></div>
+ ${remindCard()}<div class="card"><div class="row sp"><h2>Tours sold per month</h2>${tabs([['n', 'Tours'], ['pax', 'Guests'], ['usd', 'Sales $']], V.m, 'setM')}</div>${chart()}</div>
+ <h2 style="margin-top:20px">OTA payouts to receive</h2><p class="muted">Tours in one month are paid on the 7th of the next month.</p>
+ ${ota.length ? `<div class="tw"><table><tr><th>Platform</th><th>Expected on</th><th>Bookings</th><th>Amount</th></tr>${ota.map(o => `<tr><td>${esc(o.s)}</td><td>${o.d}${o.d < TODAY ? ' <span class="tag unpaid">overdue</span>' : ''}</td><td>${o.n}</td><td>${$$(o.a)}</td></tr>`).join('')}</table></div>` : '<p class="muted">No OTA payouts waiting.</p>'}
+ <h2 style="margin-top:20px">Next tours</h2>${bTable(up.slice(0, 5))}`;
+    };
+    V_.book = () => {
+      let l = [...S.bookings].sort((a, b) => b.date.localeCompare(a.date));
+      if (V.f !== 'all') l = l.filter(b => b.status === V.f);
+      return `<div class="row sp"><h1>Bookings</h1><button class="btn" onclick="editBooking()">Add booking</button></div>
+ ${tabs([['all', 'All'], ['upcoming', 'Upcoming'], ['completed', 'Completed'], ['cancelled', 'Cancelled']], V.f, 'setF')}${bTable(l)}`;
+    };
+    window.editBooking = id => {
+      const b = id ? by(S.bookings, id) : { date: TODAY, time: '09:00', pax: 2, status: 'upcoming', src: 'Direct' };
+      form(id ? 'Edit booking' : 'Add booking', [
+        { k: 'cid', l: 'Customer', t: 'select', o: S.customers.map(c => [c.id, c.name]), v: b.cid },
+        { k: 'tid', l: 'Tour', t: 'select', o: S.tours.filter(t => t.active || t.id == b.tid).map(t => [t.id, `${t.name} (${$$(t.price)})`]), v: b.tid },
+        { k: 'src', l: 'Booked through', t: 'select', o: S.sources.map(s => s.n), v: b.src },
+        { k: 'date', l: 'Tour date', t: 'date', v: b.date }, { k: 'time', l: 'Pickup time', t: 'time', v: b.time },
+        { k: 'pax', l: 'Guests', t: 'number', v: b.pax }, { k: 'hotel', l: 'Pickup hotel', v: b.hotel }, { k: 'guide', l: 'Guide / driver', v: b.guide },
+        { k: 'total', l: 'Total price (USD, blank = price x guests)', t: 'number', v: b.total },
+        { k: 'notes', l: 'Notes', t: 'textarea', v: b.notes }], o => {
+          if (!S.customers.length) { toast('Add a customer first'); return false }
+          const n = { cid: +o.cid, tid: +o.tid, src: o.src, date: o.date, time: o.time, pax: +o.pax || 1, hotel: o.hotel, guide: o.guide, notes: o.notes };
+          n.total = o.total !== '' ? +o.total : by(S.tours, n.tid).price * n.pax;
+          if (id) Object.assign(b, n); else S.bookings.push({ ...n, id: nid(S.bookings), status: 'upcoming', paid: false, paidDate: '', method: '' });
+          toast('Booking saved')
+        });
+    };
+    V_.bd = () => {
+      const b = by(S.bookings, V.id), c = by(S.customers, b.cid), t = by(S.tours, b.tid), vs = S.vp.filter(v => v.bid == b.id), o = isOTA(b.src);
+      return `<button class="link" onclick="go('book')">Back to bookings</button>
+ <div class="row sp"><h1>Booking #${b.id}</h1><div class="row noprint"><a class="btn alt sm" style="text-decoration:none" target="_blank" rel="noopener" href="${gcal(b)}">Add to calendar</a><button class="btn alt sm" onclick="editBooking(${b.id})">Edit</button>
+ ${b.status === 'upcoming' ? `<button class="btn alt sm" onclick="setSt(${b.id},'completed')">Mark completed</button><button class="btn bad sm" onclick="setSt(${b.id},'cancelled')">Cancel booking</button>` : `<button class="btn alt sm" onclick="setSt(${b.id},'upcoming')">Reopen</button>`}</div></div>
+ <div class="card"><dl class="kv"><dt>Customer</dt><dd><button class="link" onclick="go('cd',${c.id})">${esc(c.name)}</button> (${esc(c.contact)})</dd>
+ <dt>Tour</dt><dd><i class="dot" style="background:${colOf(catOf(b))}"></i>${esc(t.name)} (${esc(catOf(b))})</dd><dt>Booked through</dt><dd>${esc(b.src)}</dd>
+ <dt>When</dt><dd>${b.date} at ${b.time}</dd><dt>Guests</dt><dd>${b.pax}</dd><dt>Pickup hotel</dt><dd>${esc(b.hotel) || '-'}</dd><dt>Guide / driver</dt><dd>${esc(b.guide) || '-'}</dd>
+ <dt>Status</dt><dd>${tag(b.status)}</dd><dt>Total</dt><dd>${$$(b.total)}</dd>
+ <dt>Payment</dt><dd>${tag(pstat(b))} ${b.paid ? `received ${b.paidDate} by ${esc(b.method)}` : `expected ${pd(b)}${o ? ' (OTA payout, 7th of next month)' : ''}`}</dd><dt>Notes</dt><dd>${esc(b.notes) || '-'}</dd></dl>
+ <p class="noprint">${b.paid ? `<button class="btn alt sm" onclick="markUnpaid(${b.id})">Mark unpaid</button>` : `<button class="btn sm" onclick="markPaid(${b.id})">Mark paid</button>`}</p></div>
+ <div class="grid" style="margin-top:18px"><div class="card stat"><small>Revenue received</small><b>${$$(b.paid ? b.total : 0)}</b></div><div class="card stat"><small>Tour expenses</small><b>${$$(sum(vs))}</b></div><div class="card stat hero"><small>Profit for this tour</small><b>${$$((b.paid ? b.total : 0) - sum(vs))}</b></div></div>
+ <div class="row sp"><h2>Tour expenses</h2><button class="btn sm noprint" onclick="editVP(0,${b.id})">Add expense</button></div>
+ ${vs.length ? vpTable(vs) : '<p class="muted">No expenses yet. Add food vendors, guide, tuk-tuk, other.</p>'}`;
+    };
+    window.setSt = (id, s) => { by(S.bookings, id).status = s; save(); draw(); toast('Booking ' + s) };
+    window.markPaid = id => {
+      const b = by(S.bookings, id), o = isOTA(b.src), p = pd(b); form('Mark as paid', [
+        { k: 'date', l: 'Date received', t: 'date', v: o && p <= TODAY ? p : TODAY },
+        { k: 'method', l: 'Method', t: 'select', o: ['Cash', 'ABA', 'Wing', 'Bakong KHQR', 'PayPal', 'Card', 'OTA payout'], v: o ? 'OTA payout' : 'Cash' }], x => { b.paid = true; b.paidDate = x.date; b.method = x.method; toast('Marked paid') })
+    };
+    window.markUnpaid = id => { const b = by(S.bookings, id); b.paid = false; b.paidDate = ''; b.method = ''; save(); draw() };
+
+    const vpTable = l => `<div class="tw"><table><tr><th>Type</th><th>Paid to</th><th>Booking</th><th>Amount</th><th>Due</th><th>Status</th><th></th></tr>${l.map(v => `<tr><td>${esc(v.type)}</td><td>${esc(v.payee)}</td><td>${v.bid ? `<button class="link" onclick="go('bd',${v.bid})">#${v.bid}</button>` : '-'}</td><td>${$$(v.amt)}</td><td>${v.due}</td><td>${tag(v.paid ? 'paid' : 'unpaid')}${v.paid ? ' ' + v.paidDate : ''}</td>
+ <td>${v.paid ? `<button class="btn alt sm" onclick="vpSet(${v.id},false)">Mark unpaid</button>` : `<button class="btn sm" onclick="vpSet(${v.id},true)">Mark paid</button>`} <button class="btn alt sm" onclick="editVP(${v.id})">Edit</button> <button class="btn alt sm" onclick="delVP(${v.id})">Delete</button></td></tr>`).join('')}</table></div>`;
+    window.vpSet = (id, p) => { const v = by(S.vp, id); v.paid = p; v.paidDate = p ? TODAY : ''; save(); draw() };
+    window.delVP = id => { if (confirm('Delete this vendor payment?')) { S.vp = S.vp.filter(v => v.id != id); save(); draw() } };
+    window.editVP = (id, bid) => {
+      const v = id ? by(S.vp, id) : { due: TODAY, bid: bid || '' }; form(id ? 'Edit expense' : 'Add tour expense', [
+        { k: 'type', l: 'Expense type', t: 'select', o: S.vTypes, v: v.type }, { k: 'payee', l: 'Paid to (vendor, driver or guide name)', v: v.payee },
+        { k: 'bid', l: 'Booking', t: 'select', o: [['', 'No booking (general)'], ...S.bookings.slice().sort((a, b) => b.date.localeCompare(a.date)).map(b => [b.id, `#${b.id} ${b.date} ${by(S.customers, b.cid).name}`])], v: v.bid },
+        { k: 'amt', l: 'Amount (USD)', t: 'number', v: v.amt }, { k: 'due', l: 'Due date', t: 'date', v: v.due }], o => {
+          if (!(+o.amt > 0)) { toast('Enter an amount above 0'); return false }
+          const n = { type: o.type, payee: o.payee, bid: o.bid ? +o.bid : '', amt: +o.amt, due: o.due };
+          if (id) Object.assign(v, n); else S.vp.push({ ...n, id: nid(S.vp), paid: false, paidDate: '' }); toast('Vendor payment saved')
+        })
+    };
+
+    V_.pay = () => {
+      const f = V.f; let body;
+      if (V.pt === 'in') {
+        const l = S.bookings.filter(b => b.status !== 'cancelled' && (f === 'all' || pstat(b) === f)).sort((a, b) => pd(a).localeCompare(pd(b)));
+        body = `<div class="tw"><table><tr><th>Booking</th><th>Customer</th><th>Source</th><th>Amount</th><th>Expected</th><th>Status</th><th></th></tr>${l.map(b => `<tr><td><button class="link" onclick="go('bd',${b.id})">#${b.id}</button> ${b.date}</td><td>${esc(by(S.customers, b.cid).name)}</td><td>${esc(b.src)}</td><td>${$$(b.total)}</td><td>${b.paid ? b.paidDate : pd(b)}</td><td>${tag(pstat(b))}</td><td>${b.paid ? `<button class="btn alt sm" onclick="markUnpaid(${b.id})">Mark unpaid</button>` : `<button class="btn sm" onclick="markPaid(${b.id})">Mark paid</button>`}</td></tr>`).join('')}</table></div>`;
+      } else {
+        const l = S.vp.filter(v => f === 'all' || (v.paid ? 'paid' : 'unpaid') === f).sort((a, b) => b.due.localeCompare(a.due));
+        const bt = {}; l.forEach(v => bt[v.type] = (bt[v.type] || 0) + v.amt);
+        body = `<p><button class="btn" onclick="editVP()">Add tour expense</button></p><p class="muted">${Object.entries(bt).map(([k, a]) => `${esc(k)}: ${$$(a)}`).join('  |  ')}</p>${vpTable(l)}`;
+      }
+      return `<h1>Payments</h1>${tabs([['in', 'Money in (customers and OTA)'], ['out', 'Money out (tour expenses)']], V.pt, 'setPt')}${tabs([['all', 'All'], ['paid', 'Paid'], ['unpaid', 'Unpaid']], V.f, 'setF')}${body}`;
+    };
+    V_.cust = () => `<div class="row sp"><h1>Customers</h1><button class="btn" onclick="editCust()">Add customer</button></div>
+ <div class="tw"><table><tr><th>Name</th><th>Contact</th><th>Nationality</th><th>Bookings</th></tr>${S.customers.map(c => `<tr class="click" onclick="go('cd',${c.id})"><td>${esc(c.name)}</td><td>${esc(c.contact)}</td><td>${esc(c.nat)}</td><td>${S.bookings.filter(b => b.cid == c.id).length}</td></tr>`).join('')}</table></div>`;
+    window.editCust = id => {
+      const c = id ? by(S.customers, id) : {}; form(id ? 'Edit customer' : 'Add customer', [
+        { k: 'name', l: 'Name', v: c.name }, { k: 'contact', l: 'WhatsApp / Telegram / WeChat / email', v: c.contact }, { k: 'nat', l: 'Nationality', v: c.nat }, { k: 'notes', l: 'Notes', t: 'textarea', v: c.notes }], o => {
+          if (!o.name.trim()) { toast('Enter a name'); return false }
+          if (id) Object.assign(c, o); else S.customers.push({ ...o, id: nid(S.customers) }); toast('Customer saved')
+        })
+    };
+    V_.cd = () => {
+      const c = by(S.customers, V.id); return `<button class="link" onclick="go('cust')">Back to customers</button>
+ <div class="row sp"><h1>${esc(c.name)}</h1><button class="btn alt sm" onclick="editCust(${c.id})">Edit</button></div>
+ <div class="card"><dl class="kv"><dt>Contact</dt><dd>${esc(c.contact)}</dd><dt>Nationality</dt><dd>${esc(c.nat)}</dd><dt>Notes</dt><dd>${esc(c.notes) || '-'}</dd></dl></div>
+ <h2 style="margin-top:18px">Booking history</h2>${bTable(S.bookings.filter(b => b.cid == c.id))}`
+    };
+    V_.tour = () => `<div class="row sp"><h1>Tours</h1><button class="btn" onclick="editTour()">Add tour</button></div>
+ <div class="tw"><table><tr><th>Tour</th><th>Category</th><th>Duration</th><th>Price</th><th>Max guests</th><th>Status</th><th></th></tr>${S.tours.map(t => `<tr><td><b>${esc(t.name)}</b><br><span class="muted">${esc(t.desc)}</span></td><td><i class="dot" style="background:${colOf(t.cat)}"></i>${esc(t.cat)}</td><td>${esc(t.dur)}</td><td>${$$(t.price)}</td><td>${t.max}</td><td>${tag(t.active ? 'active' : 'inactive')}</td>
+ <td><button class="btn alt sm" onclick="editTour(${t.id})">Edit</button> <button class="btn alt sm" onclick="togTour(${t.id})">${t.active ? 'Deactivate' : 'Activate'}</button></td></tr>`).join('')}</table></div>`;
+    window.togTour = id => { const t = by(S.tours, id); t.active = !t.active; save(); draw() };
+    window.editTour = id => {
+      const t = id ? by(S.tours, id) : {}; form(id ? 'Edit tour' : 'Add tour', [
+        { k: 'name', l: 'Tour name', v: t.name }, { k: 'cat', l: 'Category (sets the chart colour)', t: 'select', o: S.tourCats.map(c => c.n), v: t.cat }, { k: 'desc', l: 'Description', t: 'textarea', v: t.desc }, { k: 'dur', l: 'Duration', v: t.dur }, { k: 'price', l: 'Price per guest (USD)', t: 'number', v: t.price }, { k: 'max', l: 'Max guests', t: 'number', v: t.max }], o => {
+          if (!o.name.trim()) { toast('Enter a tour name'); return false }
+          const n = { name: o.name, cat: o.cat, desc: o.desc, dur: o.dur, price: +o.price || 0, max: +o.max || 1 };
+          if (id) Object.assign(t, n); else S.tours.push({ ...n, id: nid(S.tours), active: true }); toast('Tour saved')
+        })
+    };
+
+    V_.fin = () => {
+      const sn = a => a.reduce((s, x) => s + x, 0), inM = d => !V.mo || d.slice(0, 7) === V.mo, dd = (a, b) => b.date.localeCompare(a.date);
+      const rev = revList().filter(r => inM(r.date)).sort(dd), exp = expList().filter(e => inM(e.date)).sort(dd), R = sum(rev), E = sum(exp); let body = '';
+      if (V.sub === 'rev') body = `<div class="tw"><table><tr><th>Received</th><th>Booking</th><th>Source</th><th>Method</th><th>Amount</th></tr>${rev.map(r => `<tr class="click" onclick="go('bd',${r.b.id})"><td>${r.date}</td><td>#${r.b.id} ${esc(by(S.customers, r.b.cid).name)}</td><td>${esc(r.b.src)}</td><td>${esc(r.b.method)}</td><td>${$$(r.amt)}</td></tr>`).join('')}<tr><th colspan="4">Total</th><th>${$$(R)}</th></tr></table></div>`;
+      if (V.sub === 'exp') {
+        const ct = {}; exp.forEach(e => ct[e.cat] = (ct[e.cat] || 0) + e.amt);
+        body = `<p><button class="btn" onclick="editExp()">Add other expense (marketing, etc.)</button> <span class="muted">Tour expenses marked paid count here automatically.</span></p><p>${Object.entries(ct).map(([k, a]) => `<span class="tag">${esc(k)}: ${$$(a)}</span>`).join(' ')}</p>
+  <div class="tw"><table><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th></th></tr>${exp.map(e => `<tr><td>${e.date}</td><td>${esc(e.cat)}</td><td>${esc(e.desc)}</td><td>${$$(e.amt)}</td><td>${e.eid ? `<button class="btn alt sm" onclick="editExp(${e.eid})">Edit</button> <button class="btn alt sm" onclick="delExp(${e.eid})">Delete</button>` : '<span class="muted">tour expense</span>'}</td></tr>`).join('')}<tr><th colspan="3">Total</th><th>${$$(E)}</th><th></th></tr></table></div>`
+      }
+      if (V.sub === 'tt') {
+        const bk = S.bookings.filter(b => b.status !== 'cancelled' && inM(b.date)).sort(dd), ex = b => sn(S.vp.filter(v => v.bid == b.id).map(v => v.amt)), rv = b => b.paid ? b.total : 0;
+        const rows = S.tours.map(t => { const l = bk.filter(b => b.tid == t.id); return { t, n: l.length, r: sn(l.map(rv)), e: sn(l.map(ex)) } }).filter(x => x.n);
+        const oth = sn(S.expenses.filter(e => inM(e.date)).map(e => e.amt)), tr = sn(rows.map(x => x.r)), te = sn(rows.map(x => x.e)), pc = n => `<td class="${n < 0 ? 'neg' : 'pos'}">${$$(n)}</td>`;
+        body = `<div class="tw"><table><tr><th>Tour</th><th>Bookings</th><th>Revenue received</th><th>Tour expenses</th><th>Profit</th></tr>${rows.map(x => `<tr><td><i class="dot" style="background:${colOf(x.t.cat)}"></i>${esc(x.t.name)}</td><td>${x.n}</td><td>${$$(x.r)}</td><td>${$$(x.e)}</td>${pc(x.r - x.e)}</tr>`).join('')}<tr><th>Total</th><th></th><th>${$$(tr)}</th><th>${$$(te)}</th><th>${$$(tr - te)}</th></tr></table></div>
+  <p>Other expenses (marketing, etc.) this period: <b>${$$(oth)}</b>. Profit after other expenses: <b>${$$(tr - te - oth)}</b></p>
+  <h3>Each tour run</h3><div class="tw"><table><tr><th>Date</th><th>Tour</th><th>Customer</th><th>Revenue</th><th>Expenses</th><th>Profit</th></tr>${bk.map(b => `<tr class="click" onclick="go('bd',${b.id})"><td>${b.date}</td><td>${esc(by(S.tours, b.tid).name)}</td><td>${esc(by(S.customers, b.cid).name)}</td><td>${$$(rv(b))}</td><td>${$$(ex(b))}</td>${pc(rv(b) - ex(b))}</tr>`).join('')}</table></div>
+  <p class="muted">Revenue counts bookings marked paid. Tour expenses count every expense line entered for the tour, paid or not.</p>`}
+      if (V.sub === 'pro') body = `<div class="grid"><div class="card stat"><small>Gross revenue</small><b>${$$(R)}</b></div><div class="card stat"><small>Total expenses</small><b>${$$(E)}</b></div><div class="card stat hero"><small>Net profit</small><b>${$$(R - E)}</b></div></div><p class="muted">Only money actually received and actually paid is counted.</p>`;
+      return `<h1>Finance</h1><div class="row noprint"><label for="mo" style="margin:0">Month</label><input id="mo" type="month" value="${V.mo}" onchange="V.mo=this.value;draw()" style="width:auto"><button class="btn alt sm" onclick="V.mo='';draw()">All time</button></div>${tabs([['rev', 'Revenue'], ['exp', 'Expenses'], ['tt', 'By tour'], ['pro', 'Profit']], V.sub, 'setSub')}${body}`;
+    };
+    window.delExp = id => { if (confirm('Delete this expense?')) { S.expenses = S.expenses.filter(e => e.id != id); save(); draw() } };
+    window.editExp = id => {
+      const e = id ? by(S.expenses, id) : { date: TODAY }; form(id ? 'Edit expense' : 'Add expense', [
+        { k: 'cat', l: 'Category', t: 'select', o: S.cats, v: e.cat }, { k: 'amt', l: 'Amount (USD)', t: 'number', v: e.amt }, { k: 'date', l: 'Date', t: 'date', v: e.date }, { k: 'desc', l: 'Description', v: e.desc }], o => {
+          if (!(+o.amt > 0)) { toast('Enter an amount above 0'); return false }
+          const n = { cat: o.cat, amt: +o.amt, date: o.date, desc: o.desc };
+          if (id) Object.assign(e, n); else S.expenses.push({ ...n, id: nid(S.expenses) }); toast('Expense saved')
+        })
+    };
+
+    V_.cal = () => {
+      const cd = new Date(V.cd + 'T00:00'), iso = d => d.toISOString().slice(0, 10), at = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x };
+      const ch = b => `<button class="chip" onclick="go('bd',${b.id})" style="background:${b.status === 'cancelled' ? '#8a9a98' : colOf(catOf(b))}">${b.time} ${esc(by(S.customers, b.cid).name)}</button>`;
+      let body = '', title = '';
+      if (V.cv === 'day') { title = V.cd; body = bTable(S.bookings.filter(b => b.date === V.cd).sort((a, b) => a.time.localeCompare(b.time))) }
+      else {
+        let start, n;
+        if (V.cv === 'week') { start = at(cd, -cd.getDay()); n = 7; title = 'Week of ' + iso(start) }
+        else { const f = new Date(cd.getFullYear(), cd.getMonth(), 1); start = at(f, -f.getDay()); n = Math.ceil((f.getDay() + new Date(cd.getFullYear(), cd.getMonth() + 1, 0).getDate()) / 7) * 7; title = cd.toLocaleString('en', { month: 'long', year: 'numeric' }) }
+        body = `<div class="cal">${'SMTWTFS'.split('').map(x => `<div class="h">${x}</div>`).join('')}${Array.from({ length: n }, (_, i) => { const d = at(start, i), k = iso(d); return `<div class="d ${k === TODAY ? 'today' : ''} ${V.cv === 'month' && d.getMonth() !== cd.getMonth() ? 'off' : ''}"><b>${d.getDate()}</b>${S.bookings.filter(b => b.date === k).map(ch).join('')}</div>` }).join('')}</div>`
+      }
+      return `<div class="row sp"><h1>Calendar</h1><div class="row noprint"><button class="btn alt sm" onclick="calNav(-1)">Previous</button><button class="btn alt sm" onclick="V.cd=TODAY;draw()">Today</button><button class="btn alt sm" onclick="calNav(1)">Next</button></div></div>
+ ${tabs([['day', 'Day'], ['week', 'Week'], ['month', 'Month']], V.cv, 'setCv')}<h3>${title}</h3>${body}<div class="legend">${S.tourCats.map(c => `<span><i class="dot" style="background:${c.c}"></i>${esc(c.n)}</span>`).join('')}</div>`;
+    };
+    window.calNav = k => { const d = new Date(V.cd + 'T00:00'); if (V.cv === 'day') d.setDate(d.getDate() + k); else if (V.cv === 'week') d.setDate(d.getDate() + 7 * k); else d.setMonth(d.getMonth() + k, 1); V.cd = d.toISOString().slice(0, 10); draw() };
+
+    V_.rep = () => {
+      const { rt, ra, rb } = V, bk = S.bookings.filter(b => inR(b.date, ra, rb)), pm = revList().filter(x => inR(x.date, ra, rb)), ex = expList().filter(x => inR(x.date, ra, rb)), R = sum(pm), E = sum(ex);
+      const grp = len => { const m = {}; pm.forEach(p => { const k = p.date.slice(0, len); (m[k] = m[k] || { r: 0, e: 0 }).r += p.amt }); ex.forEach(e => { const k = e.date.slice(0, len); (m[k] = m[k] || { r: 0, e: 0 }).e += e.amt }); return Object.keys(m).sort().map(k => `<tr><td>${k}</td><td>${$$(m[k].r)}</td><td>${$$(m[k].e)}</td><td class="${m[k].r - m[k].e < 0 ? 'neg' : 'pos'}">${$$(m[k].r - m[k].e)}</td></tr>`).join('') };
+      let body = '';
+      if (rt === 'booking') body = bTable(bk);
+      if (rt === 'revenue') body = `<div class="tw"><table><tr><th>Received</th><th>Booking</th><th>Source</th><th>Amount</th></tr>${pm.map(p => `<tr><td>${p.date}</td><td>#${p.b.id}</td><td>${esc(p.b.src)}</td><td>${$$(p.amt)}</td></tr>`).join('')}<tr><th colspan="3">Total</th><th>${$$(R)}</th></tr></table></div>`;
+      if (rt === 'expense') body = `<div class="tw"><table><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr>${ex.map(e => `<tr><td>${e.date}</td><td>${esc(e.cat)}</td><td>${esc(e.desc)}</td><td>${$$(e.amt)}</td></tr>`).join('')}<tr><th colspan="3">Total</th><th>${$$(E)}</th></tr></table></div>`;
+      if (rt === 'profit') body = `<div class="grid"><div class="card stat"><small>Revenue</small><b>${$$(R)}</b></div><div class="card stat"><small>Expenses</small><b>${$$(E)}</b></div><div class="card stat hero"><small>Net profit</small><b>${$$(R - E)}</b></div></div>`;
+      if (rt === 'monthly' || rt === 'yearly') body = `<div class="tw"><table><tr><th>${rt === 'monthly' ? 'Month' : 'Year'}</th><th>Revenue</th><th>Expenses</th><th>Net profit</th></tr>${grp(rt === 'monthly' ? 7 : 4)}</table></div>`;
+      return `<h1>Reports</h1><div class="card noprint"><div class="row"><div><label for="rt">Report</label><select id="rt" onchange="V.rt=this.value;draw()">${[['booking', 'Booking'], ['revenue', 'Revenue'], ['expense', 'Expense'], ['profit', 'Profit'], ['monthly', 'Monthly'], ['yearly', 'Yearly']].map(o => `<option value="${o[0]}" ${rt === o[0] ? 'selected' : ''}>${o[1]} report</option>`).join('')}</select></div>
+ <div><label for="ra">From</label><input id="ra" type="date" value="${ra}" onchange="V.ra=this.value;draw()"></div><div><label for="rb">To</label><input id="rb" type="date" value="${rb}" onchange="V.rb=this.value;draw()"></div>
+ <button class="btn" style="margin-top:22px" onclick="print()">Print / save PDF</button></div></div><div style="margin-top:14px">${body}</div>`;
+    };
+    const chips = (key, fmt) => `<div class="row">${S[key].map(x => { const n = x.n ?? x; return `<span class="tag">${fmt ? fmt(x) : ''}${esc(n)} <button class="link" aria-label="Remove ${esc(n)}" onclick="delItem('${key}','${esc(n)}')">x</button></span>` }).join('')}</div><p><button class="btn alt sm" onclick="addItem('${key}')">Add</button></p>`;
+    V_.set = () => {
+      const s = S.settings; return `<h1>Settings</h1>
+ <div class="card"><h3>Business profile</h3><dl class="kv"><dt>Business</dt><dd>${esc(s.name)}</dd><dt>Phone</dt><dd>${esc(s.phone)}</dd><dt>Exchange rate</dt><dd>1 USD = ${s.rate} KHR</dd><dt>Account</dt><dd>${esc(s.user)}</dd></dl>
+ <p><button class="btn alt sm" onclick="editSet()">Edit profile</button></p></div>
+ <div class="card" style="margin-top:14px"><h3>Tour settings: categories and chart colours</h3>${chips('tourCats', c => `<i class="dot" style="background:${c.c}"></i>`)}</div>
+ <div class="card" style="margin-top:14px"><h3>Booking sources</h3><p class="muted">Sources marked OTA are paid on the 7th of the next month.</p>${chips('sources', x => x.ota ? '<b>OTA</b> ' : '')}</div>
+ <div class="card" style="margin-top:14px"><h3>Vendor payment types</h3>${chips('vTypes')}</div>
+ <div class="card" style="margin-top:14px"><h3>Expense categories</h3>${chips('cats')}</div>
+ <p class="row"><button class="btn alt" onclick="tgTheme()">Switch light / dark</button><button class="btn bad" onclick="resetData()">Reset demo data</button></p>`};
+    window.editSet = () => { const s = S.settings; form('Edit profile', [{ k: 'name', l: 'Business name', v: s.name }, { k: 'phone', l: 'Phone', v: s.phone }, { k: 'rate', l: 'KHR per 1 USD', t: 'number', v: s.rate }, { k: 'user', l: 'Your name', v: s.user }], o => { Object.assign(s, o, { rate: +o.rate || 4100 }); toast('Profile saved') }) };
+    window.addItem = key => {
+      const fl = [{ k: 'n', l: 'Name' }];
+      if (key === 'tourCats') fl.push({ k: 'c', l: 'Chart colour', t: 'color', v: '#2a9d8f' });
+      if (key === 'sources') fl.push({ k: 'ota', l: 'Payment', t: 'select', o: [['0', 'Customer pays directly'], ['1', 'OTA payout on the 7th of next month']] });
+      form('Add', fl, o => { const n = o.n.trim(); if (!n) return false; S[key].push(key === 'tourCats' ? { n, c: o.c } : key === 'sources' ? { n, ota: o.ota === '1' } : n) })
+    };
+    window.delItem = (key, n) => { S[key] = S[key].filter(x => (x.n ?? x) !== n); save(); draw() };
+    window.tgTheme = () => { const r = document.documentElement, d = matchMedia('(prefers-color-scheme:dark)').matches; r.dataset.theme = (r.dataset.theme || (d ? 'dark' : 'light')) === 'dark' ? 'light' : 'dark' };
+    window.resetData = () => { if (confirm('Replace all data with the demo data?')) { S = seed(); save(); draw() } };
+
+    function draw() {
+      $('#nav').innerHTML = `<div class="brand">Mekong <span>Tours</span><div style="font-size:12px;font-weight:400;color:#9dc4bf">Tour Operator</div></div>` + NAV.map(n => `<button class="${V.r === n[0] || (V.r === 'bd' && n[0] === 'book') || (V.r === 'cd' && n[0] === 'cust') ? 'on' : ''}" onclick="V.f='all';go('${n[0]}')">${n[1]}</button>`).join('');
+      $('#main').innerHTML = V_[V.r](); checkNotif();
+    }
+    window.draw = draw;
+    draw();
+  </script>
+</body>
+
+</html>
